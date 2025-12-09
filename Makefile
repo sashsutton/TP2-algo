@@ -1,56 +1,54 @@
-# Le nom de votre classe principale
-# Renommez si nécessaire
-MAINCLASS=Main
-## Le chemin vers où votre classe compilée est installée
-# Renommez si nécessaire
-INSTALLDIR=out/production/TP3
-JARFILE=TP3RandomTrees
+# --- Configuration ---
+# Nom du fichier JAR final
+JAR_NAME = TP2.jar
 
-all: compile install exec
+# Dossier où placer les fichiers compilés
+BIN_DIR = out/production/TP2
 
-# Cible pour compiler
+# Commandes
+JAVAC = javac
+JAVA = java
+JAR = jar
+
+# Options de compilation
+JFLAGS = -g -d $(BIN_DIR) -sourcepath src
+
+# Trouve automatiquement tous les fichiers .java dans src
+SOURCES = $(shell find src -name "*.java")
+
+# --- Cibles ---
+
+# Par défaut, on compile et on exécute
+default: exec
+
+# 1. Compilation
 compile:
-	cd src ; make compile
+	@echo "=== Compilation du projet TP2 ==="
+	mkdir -p $(BIN_DIR)
+	$(JAVAC) $(JFLAGS) $(SOURCES)
+	@echo "Compilation terminée."
 
+# 2. Création du JAR (TP2.jar)
 jar: compile
-	cd $(INSTALLDIR); \
-	echo Main-Class: $(subst /,.,$(MAINCLASS)) > manifest.txt ; \
-	jar cvfm $(JARFILE).jar manifest.txt ./
-	mv $(INSTALLDIR)/$(JARFILE).jar ./
+	@echo "=== Création de $(JAR_NAME) ==="
+	echo "Main-Class: Main" > manifest.txt
+	$(JAR) cvfm $(JAR_NAME) manifest.txt -C $(BIN_DIR) .
+	rm manifest.txt
+	@echo "Fichier $(JAR_NAME) généré."
 
-install:
-	cd src ; make install
+# 3. Exécution
+exec: jar
+	@echo "=== Exécution de TP2 ==="
+	$(JAVA) -jar $(JAR_NAME)
 
+# 4. Nettoyage
 clean:
-	cd src ; make clean ; make cleanInstall
-	rm *.zip *.jar manifest.*
+	@echo "=== Nettoyage des fichiers générés ==="
+	rm -rf out
+	rm -f $(JAR_NAME) manifest.txt
+	rm -f TP2_Rendu.zip
 
-# Cible qui explique comment executer
-exec: $(JARFILE).jar
-	java -jar $(JARFILE).jar
-
-# Ou autrement
-#exec:
-#	java -classpath $(INSTALLDIR) $(MAINCLASS)
-
-# Demarre automatiquement une demonstration de votre programme
-# Il faut que cette demo soit convaincante
-demo:
-	java -classpath $(INSTALLDIR) $(MAINCLASS)
-
-# Executer automatiquent les test
-# On s'attend (d'habitude) que pour claque classe MaClasse il y ait une
-# classe TestMaClasse qui vorifie le bon comportment de chaque methode de la classe
-# sur au moins une entrée
-# A vous de completer
-test:
-	
-
-# Cible pour créer son rendu de tp 
-zip:
-	moi=$$(whoami) ; zip -r $${moi}_renduTP2.zip *
-
-
-# Cible pour vérifier le contenu de son rendu de tp 
-zipVerify:
-	moi=$$(whoami) ; unzip -l $${moi}_renduTP2.zip
+# 5. Création du ZIP pour le rendu
+zip: clean
+	@echo "=== Création de l'archive TP2_Rendu.zip ==="
+	zip -r TP2_Rendu.zip src Makefile README.md resources
