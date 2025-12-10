@@ -8,14 +8,14 @@ public class SpanningTreeAlgos {
     private static final Random gen = new Random();
 
     // --- ALGO 1: KRUSKAL ALÉATOIRE ---
+    // Source: J. B. Kruskal, "On the Shortest Spanning Subtree of a Graph", 1956.
     public static ArrayList<Edge> randomKruskal(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
-        ArrayList<Edge> allEdges = graph.getAllEdges(); // Nécessite la méthode ajoutée dans Graph.java
+        ArrayList<Edge> allEdges = graph.getAllEdges();
 
-        // 1. Mélanger les arêtes (équivalent à donner des poids aléatoires et trier)
+        // Mélange aléatoire des arêtes (Simule des poids aléatoires)
         Collections.shuffle(allEdges, gen);
 
-        // 2. Union-Find pour éviter les cycles
         UnionFind uf = new UnionFind(graph.order);
 
         for (Edge e : allEdges) {
@@ -26,54 +26,40 @@ public class SpanningTreeAlgos {
         return tree;
     }
 
-    // --- ALGO 2: PRIM ALÉATOIRE ---
-    public static ArrayList<Edge> randomPrim(Graph graph) {
+    // --- ALGO 2: PARCOURS EN PROFONDEUR ALÉATOIRE (Random DFS) ---
+    // Principe : On explore le graphe récursivement en choisissant les voisins dans un ordre aléatoire.
+    // Source : Variante aléatoire de l'algorithme de Tarjan/Hopcroft pour les parcours de graphes.
+    public static ArrayList<Edge> randomDFS(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
         boolean[] visited = new boolean[graph.order];
 
-        // PriorityQueue stocke les Arcs. On trie sur un poids aléatoire assigné à la volée ?
-        // Pour simplifier : on peut attribuer un poids aléatoire à chaque Edge au début.
-        // Mais modifier l'objet Edge est risqué si partagé.
-        // Alternative simple : Une map Edge -> Poids ou mélanger les voisins.
+        // On commence au sommet 0 (ou un autre aléatoire)
+        int startNode = gen.nextInt(graph.order);
+        dfsRecursive(graph, startNode, visited, tree);
 
-        // Version simple avec PriorityQueue d'objets custom
-        class WeightedArc implements Comparable<WeightedArc> {
-            Arc arc;
-            double weight;
-            public WeightedArc(Arc a, double w) { this.arc = a; this.weight = w; }
-            public int compareTo(WeightedArc o) { return Double.compare(this.weight, o.weight); }
-        }
-
-        PriorityQueue<WeightedArc> pq = new PriorityQueue<>();
-
-        // Départ arbitraire
-        int startNode = 0;
-        visited[startNode] = true;
-
-        // Ajouter voisins initiaux avec poids aléatoires
-        for (Arc a : graph.outEdges(startNode)) {
-            pq.add(new WeightedArc(a, gen.nextDouble()));
-        }
-
-        while (!pq.isEmpty()) {
-            WeightedArc wa = pq.poll();
-            Arc arc = wa.arc;
-
-            if (visited[arc.getDest()]) continue;
-
-            visited[arc.getDest()] = true;
-            tree.add(arc.support); // Ajout de l'arête à l'arbre
-
-            for (Arc neighbor : graph.outEdges(arc.getDest())) {
-                if (!visited[neighbor.getDest()]) {
-                    pq.add(new WeightedArc(neighbor, gen.nextDouble()));
-                }
-            }
-        }
         return tree;
     }
 
+    private static void dfsRecursive(Graph g, int u, boolean[] visited, ArrayList<Edge> tree) {
+        visited[u] = true;
+
+        // Récupérer les voisins
+        Arc[] neighbors = g.outEdges(u);
+
+        // Conversion en liste pour mélanger facilement
+        List<Arc> neighborsList = new ArrayList<>(Arrays.asList(neighbors));
+        Collections.shuffle(neighborsList, gen);
+
+        for (Arc a : neighborsList) {
+            if (!visited[a.getDest()]) {
+                tree.add(a.support); // Ajout de l'arête à l'arbre
+                dfsRecursive(g, a.getDest(), visited, tree);
+            }
+        }
+    }
+
     // --- ALGO 3: ALDOUS-BRODER (Marche Aléatoire) ---
+    // Source: A. Broder, "Generating random spanning trees", 1989.
     public static ArrayList<Edge> aldousBroder(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
         boolean[] visited = new boolean[graph.order];
@@ -84,7 +70,7 @@ public class SpanningTreeAlgos {
 
         while (visitedCount < graph.order) {
             Arc[] neighbors = graph.outEdges(current);
-            if (neighbors.length == 0) break; // Sécurité
+            if (neighbors.length == 0) break;
 
             Arc neighborArc = neighbors[gen.nextInt(neighbors.length)];
             int neighbor = neighborArc.getDest();
@@ -100,29 +86,26 @@ public class SpanningTreeAlgos {
     }
 
     // --- ALGO 4: WILSON (Loop-Erased Random Walk) ---
+    // Source: D. B. Wilson, "Generating random spanning trees more quickly than the cover time", 1996.
     public static ArrayList<Edge> wilson(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
         boolean[] inTree = new boolean[graph.order];
 
-        // Init : mettre la racine (0) dans l'arbre
-        inTree[0] = true;
-
-        // Tableau pour stocker le chemin courant (next[u] = l'arc emprunté depuis u)
+        inTree[0] = true; // La racine
         Arc[] next = new Arc[graph.order];
 
         for (int i = 1; i < graph.order; i++) {
             if (inTree[i]) continue;
 
             int u = i;
-            // Phase 1 : Marche aléatoire jusqu'à toucher l'arbre
+            // Marche aléatoire jusqu'à l'arbre
             while (!inTree[u]) {
                 Arc[] neighbors = graph.outEdges(u);
-                Arc move = neighbors[gen.nextInt(neighbors.length)];
-                next[u] = move; // Enregistre le mouvement (écrase les cycles automatiquement)
-                u = move.getDest();
+                next[u] = neighbors[gen.nextInt(neighbors.length)];
+                u = next[u].getDest();
             }
 
-            // Phase 2 : Ajouter le chemin sans boucle à l'arbre
+            // Reconstruction du chemin sans cycle
             u = i;
             while (!inTree[u]) {
                 Arc arc = next[u];
