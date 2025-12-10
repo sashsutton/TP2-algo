@@ -13,19 +13,42 @@ public class Main {
     static Grid grid = null;
 
     public static void main(String argv[]) throws InterruptedException {
-        Graph graph = chooseFromGraphFamily();
+        Graph completeGraph = new Complete(20).graph;
+        Graph erdosRenyiGraph = new ErdosRenyi(20, 0.5f).graph;
+        Graph gridGraph = chooseFromGraphFamily();
+        Graph lollipopGraph = new Lollipop(20).graph;
+
+        testAlgorithm(completeGraph,"complete", "Kruskal", 1);
+        testAlgorithm(completeGraph,"complete", "RandomDFS", 2);
+        testAlgorithm(completeGraph,"complete", "Aldous-Broder", 3);
+        testAlgorithm(completeGraph,"complete", "Wilson", 4);
+
+
+        testAlgorithm(erdosRenyiGraph,"erdos renyi", "Krushkal", 1);
+        testAlgorithm(erdosRenyiGraph,"erdos renyi", "RandomDFS", 2);
+        testAlgorithm(erdosRenyiGraph,"erdos renyi", "Aldous-Broder", 3);
+        testAlgorithm(erdosRenyiGraph,"erdos renyi", "Wilson", 4);
+
+
+        testAlgorithm(lollipopGraph,"lollipop", "Kruskal", 1);
+        testAlgorithm(lollipopGraph,"lollipop", "RandomDFS", 2);
+        testAlgorithm(lollipopGraph,"lollipop", "Aldous-Broder", 3);
+        testAlgorithm(lollipopGraph,"lollipop", "Wilson", 4);
+
+
 
         // Comparaison des algorithmes
         // Note: Kruskal et Prim étant similaires (gloutons pondérés),
         // nous remplaçons Prim par Random DFS pour explorer une autre topologie.
-        testAlgorithm(graph, "Kruskal", 1);
-        testAlgorithm(graph, "RandomDFS", 2); // Remplacement ici
-        testAlgorithm(graph, "Aldous-Broder", 3);
-        testAlgorithm(graph, "Wilson", 4);
+        testAlgorithm(gridGraph,"grid", "Kruskal", 1);
+        testAlgorithm(gridGraph,"grid", "RandomDFS", 2); // Remplacement ici
+        testAlgorithm(gridGraph,"grid", "Aldous-Broder", 3);
+        testAlgorithm(gridGraph,"grid", "Wilson", 4);
     }
 
-    private static void testAlgorithm(Graph graph, String name, int algoID) throws InterruptedException {
+    private static void testAlgorithm(Graph graph,String graphName, String name, int algoID) throws InterruptedException {
         System.out.println("--- TESTING " + name + " ---");
+        System.out.println(graphName);
         ArrayList<Edge> randomTree = null;
         int noOfSamples = 10;
         Stats stats = new Stats(noOfSamples);
@@ -36,7 +59,7 @@ public class Main {
         }
         stats.print();
 
-        if (grid != null && randomTree != null) {
+        if (grid != null && graph == grid.graph && randomTree != null) {
             showGrid(grid, randomTree, name);
         }
         System.out.println();
