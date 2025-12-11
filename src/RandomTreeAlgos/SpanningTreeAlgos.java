@@ -52,7 +52,7 @@ public class SpanningTreeAlgos {
 
         for (Arc a : neighborsList) {
             if (!visited[a.getDest()]) {
-                tree.add(a.support); // Ajout de l'arête à l'arbre
+                tree.add(a.support);
                 dfsRecursive(g, a.getDest(), visited, tree);
             }
         }

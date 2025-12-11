@@ -15,7 +15,7 @@ public class Main {
     public static void main(String argv[]) throws InterruptedException {
         Graph completeGraph = new Complete(20).graph;
         Graph erdosRenyiGraph = new ErdosRenyi(20, 0.5f).graph;
-        Graph gridGraph = chooseFromGraphFamily();
+        Graph gridGraph = new Grid(40, 30).graph;
         Graph lollipopGraph = new Lollipop(20).graph;
 
         testAlgorithm(completeGraph,"complete", "Kruskal", 1);
@@ -65,10 +65,7 @@ public class Main {
         System.out.println();
     }
 
-    private static Graph chooseFromGraphFamily() {
-        grid = new Grid(40, 30);
-        return grid.graph;
-    }
+
 
     public static ArrayList<Edge> genTree(Graph graph, int algoID) {
         switch (algoID) {

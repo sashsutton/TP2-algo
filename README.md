@@ -31,16 +31,31 @@ Nous avons implémenté **4 algorithmes distincts**, choisis pour représenter d
 * **Propriété :** Génération **uniforme** comme Aldous-Broder, mais beaucoup plus efficace en pratique.
 * [cite_start]**Source :** David B. Wilson, *"Generating random spanning trees more quickly than the cover time"*, STOC, 1996[cite: 96, 261].
 
-## Résultats et Comparaison
+## Résultats et Comparaisons
 
-Les tests effectués sur une grille 40x30 montrent des différences flagrantes :
+Nous avons testé les algorithmes sur quatre topologies de graphes différentes pour analyser leur comportement. Voici les observations basées sur les moyennes de 10 échantillons :
 
-| Algorithme | Type | Diamètre (Forme) | Indice de Wiener |
-| :--- | :--- | :--- | :--- |
-| **Kruskal** | Biaisé | Faible (Compact) | Moyen |
-| **Random DFS** | Biaisé | **Très Élevé** (Longs couloirs) | **Très Élevé** |
-| **Aldous-Broder** | Uniforme | Moyen | Moyen |
-| **Wilson** | Uniforme | Moyen | Moyen |
+### 1. Sur une Grille (40x30 sommets) - *Labyrinthes*
+C'est ici que les différences topologiques sont les plus flagrantes.
+* **Aldous-Broder / Wilson (Uniformes) :** Produisent des labyrinthes équilibrés (Diamètre ~186, Wiener ~50M).
+* **Kruskal (Biaisé) :** Produit des labyrinthes plus compacts, avec des chemins plus courts (Diamètre ~161).
+* **Random DFS (Biaisé) :** Produit des labyrinthes "rivière" extrêmement tortueux (Diamètre ~648, Wiener ~160M). Il cherche la profondeur maximale.
+
+### 2. Sur un Graphe Complet (20 sommets)
+Tous les sommets sont reliés entre eux.
+* **Random DFS :** Trouve quasi-systématiquement un **Chemin Hamiltonien** (une ligne unique passant par tous les sommets). Diamètre moyen de **19** pour 20 sommets.
+* **Autres algos :** Produisent des arbres en étoile ou équilibrés avec un diamètre beaucoup plus petit (~9-11).
+
+### 3. Sur une "Sucette" (Lollipop - 20 sommets)
+Un graphe composé d'une clique (tête) et d'une tige.
+* Le **Random DFS** a tendance à s'enfermer dans la clique ou à parcourir la tige linéairement, augmentant le diamètre (~15) par rapport aux algorithmes uniformes (~12).
+
+### Conclusion Générale
+Les résultats confirment les propriétés théoriques :
+1.  **Wilson et Aldous-Broder** sont indiscernables statistiquement, validant leur propriété d'**uniformité**.
+2.  **Random DFS** présente un biais fort vers la création de **chemins longs et profonds** (diamètre élevé), quelle que soit la topologie du graphe.
+3.  **Kruskal** présente un biais inverse, favorisant des structures plus **compactes et branchues** (diamètre faible).
+
 
 *Note : Aldous-Broder et Wilson produisent statistiquement les mêmes résultats (aux variations près), confirmant leur propriété d'uniformité.*
 
@@ -52,3 +67,12 @@ Utiliser le Makefile fourni à la racine :
 make clean
 make exec
 ```
+## Références Bibliographiques
+Les algorithmes implémentés dans ce projet sont basés sur les sources suivantes:
+**Aldous-Broder** :
+    * Génération uniforme par marche aléatoire.
+    * *Réf :* https://weblog.jamisbuck.org/2011/1/17/maze-generation-aldous-broder-algorithm
+
+**Wilson** :
+    * Génération uniforme par marche aléatoire à effacement de boucles (Loop-Erased Random Walk).
+    * *Réf :* https://gist.github.com/mbostock/11357811
