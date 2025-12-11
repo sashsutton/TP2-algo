@@ -8,7 +8,6 @@ public class SpanningTreeAlgos {
     private static final Random gen = new Random();
 
     // --- ALGO 1: KRUSKAL ALÉATOIRE ---
-    // Source: J. B. Kruskal, "On the Shortest Spanning Subtree of a Graph", 1956.
     public static ArrayList<Edge> randomKruskal(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
         ArrayList<Edge> allEdges = graph.getAllEdges();
@@ -28,7 +27,6 @@ public class SpanningTreeAlgos {
 
     // --- ALGO 2: PARCOURS EN PROFONDEUR ALÉATOIRE (Random DFS) ---
     // Principe : On explore le graphe récursivement en choisissant les voisins dans un ordre aléatoire.
-    // Source : Variante aléatoire de l'algorithme de Tarjan/Hopcroft pour les parcours de graphes.
     public static ArrayList<Edge> randomDFS(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
         boolean[] visited = new boolean[graph.order];
@@ -59,7 +57,6 @@ public class SpanningTreeAlgos {
     }
 
     // --- ALGO 3: ALDOUS-BRODER (Marche Aléatoire) ---
-    // Source: A. Broder, "Generating random spanning trees", 1989.
     public static ArrayList<Edge> aldousBroder(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
         boolean[] visited = new boolean[graph.order];
@@ -86,7 +83,6 @@ public class SpanningTreeAlgos {
     }
 
     // --- ALGO 4: WILSON (Loop-Erased Random Walk) ---
-    // Source: D. B. Wilson, "Generating random spanning trees more quickly than the cover time", 1996.
     public static ArrayList<Edge> wilson(Graph graph) {
         ArrayList<Edge> tree = new ArrayList<>();
         boolean[] inTree = new boolean[graph.order];

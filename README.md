@@ -70,9 +70,12 @@ make exec
 ## Références Bibliographiques
 Les algorithmes implémentés dans ce projet sont basés sur les sources suivantes:
 **Aldous-Broder** :
-    * Génération uniforme par marche aléatoire.
-    * *Réf :* https://weblog.jamisbuck.org/2011/1/17/maze-generation-aldous-broder-algorithm
+* Génération uniforme par marche aléatoire.
+* *Réf :* https://weblog.jamisbuck.org/2011/1/17/maze-generation-aldous-broder-algorithm
 
 **Wilson** :
-    * Génération uniforme par marche aléatoire à effacement de boucles (Loop-Erased Random Walk).
-    * *Réf :* https://gist.github.com/mbostock/11357811
+* Génération uniforme par marche aléatoire à effacement de boucles (Loop-Erased Random Walk).
+* *Réf :* https://gist.github.com/mbostock/11357811
+
+**Randomisation(Collection.shuffle)**:
+* *Réf: * https://www.baeldung.com/java-shuffle-collection
