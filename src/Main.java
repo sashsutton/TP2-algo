@@ -13,10 +13,10 @@ public class Main {
     static Grid grid = null;
 
     public static void main(String argv[]) throws InterruptedException {
-        Graph completeGraph = new Complete(20).graph;
-        Graph erdosRenyiGraph = new ErdosRenyi(20, 0.5f).graph;
+        Graph completeGraph = new Complete(50).graph;
+        Graph erdosRenyiGraph = new ErdosRenyi(50, 0.5f).graph;
         Graph gridGraph = new Grid(40, 30).graph;
-        Graph lollipopGraph = new Lollipop(20).graph;
+        Graph lollipopGraph = new Lollipop(50).graph;
 
         testAlgorithm(completeGraph,"complete", "Kruskal", 1);
         testAlgorithm(completeGraph,"complete", "RandomDFS", 2);
